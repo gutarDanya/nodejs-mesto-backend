@@ -7,6 +7,8 @@ router.get('/', getCards);
 
 router.post('/', createCard);
 
-router.delete('/:cardId', deleteCard)
+router.delete('/:cardId', deleteCard);
+
+
 
 export default router
