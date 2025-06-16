@@ -1,7 +1,9 @@
-import { Router } from "express";
-import { getCards, createCard, deleteCard } from "../controllers/card";
+import { Router } from 'express';
+import {
+  getCards, createCard, deleteCard, likeCard, removeLikeCard,
+} from '../controllers/card';
 
-const router = Router()
+const router = Router();
 
 router.get('/', getCards);
 
@@ -9,6 +11,8 @@ router.post('/', createCard);
 
 router.delete('/:cardId', deleteCard);
 
+router.put('/:cardId/likes', likeCard);
 
+router.delete('/:cardId/likes', removeLikeCard);
 
-export default router
+export default router;

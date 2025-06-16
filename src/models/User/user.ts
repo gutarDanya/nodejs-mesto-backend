@@ -1,23 +1,23 @@
-import { IUser } from 'models/types'
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
+import { IUser } from '../types';
 
 const userSchema = new mongoose.Schema<IUser>({
   name: {
     type: String,
     minlength: 2,
     maxlength: 30,
-    required: true
+    required: true,
   },
   about: {
     type: String,
     minlength: 2,
     maxlength: 200,
-    required: true
+    required: true,
   },
   avatar: {
     type: String,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-export default mongoose.model<IUser>("user", userSchema)
+export default mongoose.model<IUser>('user', userSchema);
