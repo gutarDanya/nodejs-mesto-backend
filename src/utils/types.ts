@@ -6,3 +6,7 @@ export interface CrutchRequest extends Request {
     _id: string
   }
 }
+
+export interface ErrorWithStatus extends Error {
+  statusCode: number
+}
