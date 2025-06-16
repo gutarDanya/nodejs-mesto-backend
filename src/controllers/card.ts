@@ -3,18 +3,18 @@ import { CrutchRequest } from '../utils/types';
 import Card from '../models/Card/Card';
 import NotFoundError from '../utils/NotFoundError';
 
-export const getCards = async (req: Request, res: Response) => {
+export const getCards = async (req: Request, res: Response, next: NextFunction) => {
   await Card.find({})
     .then((cards) => res.status(200).send(cards))
-    .catch((err) => res.status(500).send({ message: err }));
+    .catch(next);
 };
 
-export const createCard = async (req: CrutchRequest, res: Response) => {
+export const createCard = async (req: CrutchRequest, res: Response, next: NextFunction) => {
   const { name, link } = req.body;
   const _id = req.user?._id;
   await Card.create({ name, link, owner: _id })
     .then((card) => res.status(201).send(card))
-    .catch((err) => res.status(500).send({ message: err }));
+    .catch(next);
 };
 
 export const deleteCard = async (req: Request, res: Response, next: NextFunction) => {

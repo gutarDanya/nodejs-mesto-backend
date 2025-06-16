@@ -19,7 +19,7 @@ export const errorsMW = (
   const { statusCode = 500, message } = err;
 
   res.status(statusCode).send({
-    message: message || 'ошибка сервера',
+    message: message || 'На сервере произошла ошибка',
   });
 
   next();

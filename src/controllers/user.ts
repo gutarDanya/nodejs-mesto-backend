@@ -3,10 +3,10 @@ import { CrutchRequest } from '../utils/types';
 import User from '../models/User/user';
 import NotFoundError from '../utils/NotFoundError';
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   await User.find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(500).send({ message: 'ошибка' }));
+    .catch(next);
 };
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -21,11 +21,11 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
     .catch(next);
 };
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { name, about, avatar } = req.body;
   await User.create({ name, about, avatar })
     .then((user) => res.status(201).send(user))
-    .catch(() => res.status(500).send({ message: 'ошибка' }));
+    .catch(next);
 };
 
 export const updateUserAbout = async (req: CrutchRequest, res: Response, next: NextFunction) => {
