@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import { errors } from 'celebrate';
 import userRouter from './routes/user';
 import cardRouter from './routes/card';
 import { authorization, errorsMW } from './middlewares/middlewares';
@@ -15,6 +16,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb')
 app.use(authorization);
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
+app.use(errors());
 app.use(errorsMW);
 app.listen(PORT, () => {
   console.log(`я работаю на порту ${PORT}`);
