@@ -30,9 +30,10 @@ export const deleteCard = async (req: Request, res: Response, next: NextFunction
 };
 
 export const likeCard = async (req: CrutchRequest, res: Response, next: NextFunction) => {
+  const _id = req.params.cardId;
   const id = req.user?._id;
 
-  await Card.findByIdAndUpdate(id, { $addToSet: { likes: id } }, { new: true })
+  await Card.findByIdAndUpdate(_id, { $addToSet: { likes: id } }, { new: true })
     .then((card) => {
       if (!card) {
         throw new NotFoundError('этот пользователь не найден');
@@ -44,9 +45,10 @@ export const likeCard = async (req: CrutchRequest, res: Response, next: NextFunc
 };
 
 export const removeLikeCard = async (req: CrutchRequest, res: Response, next: NextFunction) => {
+  const _id = req.params.cardId;
   const id = req.user?._id;
 
-  await Card.findByIdAndUpdate(id, { $pull: { likes: id } }, { new: true })
+  await Card.findByIdAndUpdate(_id, { $pull: { likes: id } }, { new: true })
     .then((card) => {
       if (!card) {
         throw new NotFoundError('этот пользователь не найден');
