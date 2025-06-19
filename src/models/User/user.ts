@@ -1,23 +1,66 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 import { IUser } from '../types';
+import UnauthorizedError from '../../utils/UnauthorizedError';
 
-const userSchema = new mongoose.Schema<IUser>({
+interface UserModel extends mongoose.Model<IUser> {
+  findUserByCredentials: (
+    email: string, // eslint-disable-line no-unused-vars
+    password: string // eslint-disable-line no-unused-vars
+  ) => mongoose.Query<
+  mongoose.Document<unknown, any, IUser> | null, mongoose.Document<unknown, any, IUser>
+  >
+}
+
+const userSchema = new mongoose.Schema<IUser, UserModel>({
   name: {
     type: String,
     minlength: 2,
     maxlength: 30,
-    required: true,
+    default: 'Жак-Ив Кусто',
   },
   about: {
     type: String,
     minlength: 2,
     maxlength: 200,
-    required: true,
+    default: 'Исследователь',
   },
   avatar: {
     type: String,
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    match: [
+      /^https?:\/\/(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[-._~:/?#[\]@!$&'()*+,;=a-zA-Z0-9]*)?#?$/,
+      'Пожалуйста, введите корректный URL',
+    ],
+  },
+  email: {
+    type: String,
     required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false,
   },
 });
 
-export default mongoose.model<IUser>('user', userSchema);
+userSchema.static('findUserByCredentials', function findUserByCredentials(email: string, password: string) {
+  return this.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
+      }
+
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
+          }
+
+          return user;
+        });
+    });
+});
+
+export default mongoose.model<IUser, UserModel>('user', userSchema);
