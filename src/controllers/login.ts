@@ -8,14 +8,13 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   const { email, password } = req.body;
 
   await User.findUserByCredentials(email, password)
-    .select('+password')
     .then((user) => {
       const token = jwt.sign({ _id: user?._id }, 'some-secret-key', { expiresIn: 3600 });
 
       res.cookie('token', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
-      });
+      }).end();
     })
 
     .catch(next);
@@ -30,14 +29,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     password,
   } = req.body;
 
-  await User.findOne({ email })
-    .then((user) => {
-      if (!user) {
-        return bcrypt.hash(password, 10);
-      }
-
-      throw new SignupError('такой пользователь уже существует');
-    })
+  await bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
       about,
@@ -45,6 +37,15 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       email,
       password: hash,
     }))
-    .then((user) => res.status(201).send(user))
-    .catch(next);
+    .then((user) => {
+      const { password: _, ...userToSend } = user.toObject();
+      res.status(201).send(userToSend);
+    })
+    .catch((error) => {
+      if (error.code === 11000 && error.name === 'MongoServerError') {
+        next(new SignupError('такой пользователь уже существет'));
+      } else {
+        next(error);
+      }
+    });
 };

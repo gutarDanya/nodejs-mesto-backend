@@ -1,40 +1,26 @@
 import jwt from 'jsonwebtoken';
 import { Response, NextFunction } from 'express';
-import { IRequest, ErrorWithStatus } from '../utils/types';
+import { IRequest } from '../utils/types';
 import UnauthorizedError from '../utils/UnauthorizedError';
 
-export const errorsMW = (
-  err: ErrorWithStatus,
-  req: IRequest,
-  res: Response,
-  next: NextFunction,
-) => {
-  const { statusCode = 500, message } = err;
-
-  res.status(statusCode).send({
-    message: message || 'На сервере произошла ошибка',
-  });
-
-  next();
-};
-
-export const auth = async (req: IRequest, res: Response, next: NextFunction) => {
-  const { authorization } = req.headers;
-
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+const { JWT_SECRET = '123456789' } = process.env;
+const auth = async (req: IRequest, res: Response, next: NextFunction) => {
+  if (!req.cookies.token || !req.cookies.token.startsWith('Bearer ')) {
     next(new UnauthorizedError('Необходима авторизация'));
   }
 
-  const token = authorization?.replace('Bearer ', '');
+  const token = req.cookies.token.replace('Bearer ', '');
   let payload;
 
   try {
-    payload = jwt.verify(token!, 'some-secret-key');
+    payload = jwt.verify(token!, JWT_SECRET);
   } catch (err) {
-    next(new UnauthorizedError('Необходима авторизация'));
+    return next(new UnauthorizedError('Необходима авторизация'));
   }
 
   req.user = payload;
 
-  next();
+  return next();
 };
+
+export default auth;
