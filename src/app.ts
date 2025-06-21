@@ -8,11 +8,11 @@ import authRouter from './routes/authorization';
 import errorsMW from './middlewares/errorsMW';
 import auth from './middlewares/auth';
 import { requestLogger, errorLogger } from './middlewares/logger';
+import { PORT } from '../config';
 
 require('dotenv').config();
 
 mongoose.set('strictQuery', true);
-const { PORT = 3000 } = process.env;
 const app = express();
 app.use(cookieParser());
 app.use(express.json());

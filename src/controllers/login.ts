@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import SignupError from '../utils/SignupError';
 import User from '../models/User/user';
-import JWT_SECRET from '../../config';
+import { JWT_SECRET } from '../../config';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
