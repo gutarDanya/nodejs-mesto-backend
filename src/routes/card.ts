@@ -22,7 +22,6 @@ router.delete('/:cardId', celebrate({
   }),
 }), deleteCard);
 
-/* id захардокоженый, проверка может не проходить по умолчанию */
 router.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
     cardId: Joi.string().alphanum().length(24),

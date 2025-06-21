@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import { errors } from 'celebrate';
+import cookieParser from 'cookie-parser';
 import userRouter from './routes/user';
 import cardRouter from './routes/card';
 import authRouter from './routes/authorization';
@@ -9,12 +10,11 @@ import auth from './middlewares/auth';
 import { requestLogger, errorLogger } from './middlewares/logger';
 
 require('dotenv').config();
-const cookieParser = require('cookie-parser');
 
 mongoose.set('strictQuery', true);
 const { PORT = 3000 } = process.env;
 const app = express();
-app.use(cookieParser);
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 mongoose.connect('mongodb://localhost:27017/mestodb')

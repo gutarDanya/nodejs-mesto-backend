@@ -3,13 +3,14 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import SignupError from '../utils/SignupError';
 import User from '../models/User/user';
+import JWT_SECRET from '../../config';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
   await User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user?._id }, 'some-secret-key', { expiresIn: 3600 });
+      const token = jwt.sign({ _id: user?._id }, JWT_SECRET, { expiresIn: 3600 });
 
       res.cookie('token', token, {
         maxAge: 3600000 * 24 * 7,

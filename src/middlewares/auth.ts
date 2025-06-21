@@ -2,14 +2,14 @@ import jwt from 'jsonwebtoken';
 import { Response, NextFunction } from 'express';
 import { IRequest } from '../utils/types';
 import UnauthorizedError from '../utils/UnauthorizedError';
+import JWT_SECRET from '../../config';
 
-const { JWT_SECRET = '123456789' } = process.env;
 const auth = async (req: IRequest, res: Response, next: NextFunction) => {
   if (!req.cookies.token || !req.cookies.token.startsWith('Bearer ')) {
     next(new UnauthorizedError('Необходима авторизация'));
   }
 
-  const token = req.cookies.token.replace('Bearer ', '');
+  const { token } = req.cookies;
   let payload;
 
   try {

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { IRequest } from '../utils/types';
 import Card from '../models/Card/Card';
 import NotFoundError from '../utils/NotFoundError';
+import RemoveError from '../utils/removeError';
 
 export const getCards = async (req: Request, res: Response, next: NextFunction) => {
   await Card.find({})
@@ -18,15 +19,18 @@ export const createCard = async (req: IRequest, res: Response, next: NextFunctio
 };
 
 export const deleteCard = async (req: IRequest, res: Response, next: NextFunction) => {
-  await Card.findByIdAndDelete(req.params.cardId)
+  await Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('этот пользователь не найден');
       } else if (card.owner._id !== req.user) {
-        throw new Error('Вы не можете удалять карточки других пользователей');
+        throw new RemoveError('Вы не можете удалять посты других пользователей');
       }
 
-      res.status(200).send(card);
+      return Card.findByIdAndDelete(card._id);
+    })
+    .then((deletedCard) => {
+      res.status(200).send(deletedCard);
     })
     .catch(next);
 };
